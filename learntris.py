@@ -3,12 +3,26 @@ score = 0
 cleared_lines = 0
 tetramino = []
 b = False
+shift_h = 0
+shift_v = 0
 
 while True:
     if b:
         break
 
-    aux = input().split()
+    aux = []
+    escape = False
+    for l in input():
+        match l:
+            case '?':
+                escape = True
+            case ' ':
+                pass
+            case _:
+                if escape:
+                    aux.append('?' + l)
+                else:
+                    aux.append(l)
 
     for com in aux:
         match com:
@@ -65,6 +79,10 @@ while True:
                 tetramino = [[tetramino[l][c] for l in range(
                     len(tetramino)-1, -1, -1)] for c in range(len(tetramino[0]))]
 
+            case '(':
+                tetramino = [[tetramino[l][c] for l in range(
+                    len(tetramino))] for c in range(len(tetramino[0]))]
+
             case ';':
                 print()
 
@@ -74,13 +92,48 @@ while True:
 
             case 'P':
 
-                fill = (len(m[0]) - len(tetramino[0])) // 2
+                # calculates Tetramino's width
+                width = len(tetramino[0])
 
-                for l in tetramino:
+                for l in range(len(tetramino)-1, -1, -1):
+                    if sum([tetramino[x][l] != '.'
+                            for x in range(len(tetramino))]):
+                        break
+                    else:
+                        width -= 1
+
+                # calculates Tetramino's height
+                height = len(tetramino)
+
+                for l in range(len(tetramino)-1, -1, -1):
+                    if sum([x != '.' for x in tetramino[l]]):
+                        break
+                    else:
+                        height -= 1
+
+                fill = (len(m[0]) - len(tetramino[0])) // 2 + shift_h
+
+                fill = min(len(m[0]) - width, fill)
+
+                shift_v = min(len(m) - height, shift_v)
+
+                for l in range(shift_v):
+                    print(' '.join(len(m[0]) * '.'))
+
+                for l in tetramino[:height]:
                     aux = [x.upper() for x in l]
-                    aux = fill * ['.'] + aux + (fill + 1) * ['.']
+                    aux = fill * ['.'] + aux + len(m[0]) * ['.']
                     aux = aux[: len(m[0])]
                     print(' '.join(aux))
 
-                for l in m[:-len(tetramino)]:
+                for l in m[:-height - shift_v]:
                     print(' '.join(l))
+
+            case '<':
+                shift_h -= 1
+
+            case '>':
+                shift_h += 1
+
+            case 'v':
+                shift_v += 1
