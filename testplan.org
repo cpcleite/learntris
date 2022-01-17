@@ -1451,7 +1451,7 @@ Game Over
 #+name: learntris.end
 #+begin_src
 > q
-(Something Awesome)
+: (Something Awesome)
 = The Next Test
 : Congratualations! Your learntris implementation passes all
 : existing tests, and you've even created and passed a few of
